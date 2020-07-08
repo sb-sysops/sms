@@ -1,0 +1,28 @@
+public class MessagingSessionMethod 
+{
+    @invocableMethod(label = 'Messaging Session Method')
+    public static void createCase(List<string> messageID)
+    {
+        MessagingSession ms = [SELECT id,EndUserContactId
+                               FROM MessagingSession
+                               WHERE id=:messageID[0]
+                               LIMIT 1];
+        
+        Case c = new Case();
+        c.Status = 'New';
+        c.Origin = 'SMS';
+        c.Subject = 'SMS Case: ';
+        c.Description = 'Please check Messaging Session transcript and Customer profile for previous cases.';
+        if(ms.EndUserContactId != null)
+        {
+            c.ContactId = ms.EndUserContactId;
+        }
+        insert c;
+        
+        c.OwnerId = '00G4N000002UrV9';
+        update c;
+        
+        ms.CaseId = c.Id;
+        update ms;
+    }
+}
